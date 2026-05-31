@@ -175,7 +175,7 @@ header .reveal{transition-delay:var(--d,0s)}
     <div class="hero-top reveal" style="--d:0s">Selected Work &nbsp;·&nbsp; Data Engineering &nbsp;·&nbsp; 2024-2026</div>
     <h1 class="reveal" style="--d:.06s">Mohannad<br>Hyasat<span class="amp">.</span></h1>
     <div class="role reveal" style="--d:.12s">Data Engineer &nbsp;<b>//</b>&nbsp; warehousing · ETL · BI</div>
-    <p class="lede reveal" style="--d:.18s">I build <strong>data warehouses, ETL pipelines, and the BI on top of them</strong>, across government and enterprise systems.</p>
+    <p class="lede reveal" style="--d:.18s">I design <strong>warehouses and ETL</strong> for systems where the data is messy, the scale is national, and correctness isn't optional. Below is the work I'm proudest of.</p>
     <div class="hero-cta reveal" style="--d:.24s">
       <a href="#government" class="btn solid">View the work</a>
       <a href="mailto:Hyasat.mohannad@gmail.com" class="btn">Hyasat.mohannad@gmail.com</a>
@@ -416,6 +416,24 @@ header .reveal{transition-delay:var(--d,0s)}
       <div class="detail"><div class="detail-inner"><div class="detail-pad">
         <div class="spacer"></div>
         <div class="detail-main">
+          <div class="diagram">
+            <div class="diag-cap">Per-KPI build pattern (abstracted)</div>
+            <div class="flow">
+              <div class="node">Multiple entities<small>one source each</small></div>
+              <div class="arrow">→</div>
+              <div class="node">Starter queries<small>pull only the<br>needed slice</small></div>
+              <div class="arrow">→</div>
+              <div class="node">Staging DB<small>per-source tables</small></div>
+              <div class="arrow">→</div>
+              <div class="node acc">Consolidating query<small>join + business rules</small></div>
+              <div class="arrow">→</div>
+              <div class="node">KPI mart<small>one final table</small></div>
+            </div>
+            <div class="diag-foot">
+              <span class="diag-pill"><b>Stage 1</b> isolate &amp; simplify each source</span>
+              <span class="diag-pill"><b>Stage 2</b> reconcile &amp; apply rules in one place</span>
+            </div>
+          </div>
           <div class="block">
             <div class="block-lbl">Context</div>
             <p>Unlike the national warehouse, this wasn't a broad consolidation. It's targeted: the ministry tracks specific KPIs, so this is a purpose-built mart feeding reporting, shaped around the exact metrics they need.</p>
