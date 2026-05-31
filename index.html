@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohannad Hyasat — Data Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Schibsted+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#15120d; --bg2:#1b1711; --panel:#211c15; --panel2:#272118;
+  --line:#352d22; --line-hi:#4a3f2f;
+  --bone:#ece3d2; --bone-dim:#b3a890; --bone-mute:#8a7f6a;
+  --ember:#ff5a2c; --ember-soft:rgba(255,90,44,.14); --ember-line:rgba(255,90,44,.4);
+  --maxw:1120px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--bone);
+  font-family:'Schibsted Grotesk',sans-serif; font-size:16px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(1100px 600px at 88% -8%, rgba(255,90,44,.10), transparent 58%);
+  background-attachment:fixed;
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px; position:relative; z-index:1}
+.mono{font-family:'Spline Sans Mono',monospace}
+.serif{font-family:'Fraunces',serif}
+a{color:inherit; text-decoration:none}
+
+nav{position:sticky; top:0; z-index:50; background:rgba(21,18,13,.78); backdrop-filter:blur(10px); border-bottom:1px solid var(--line)}
+.nav-in{max-width:var(--maxw); margin:0 auto; padding:16px 32px; display:flex; align-items:center; gap:26px}
+.brand{font-family:'Fraunces',serif; font-weight:600; font-size:18px; letter-spacing:-.01em}
+.brand b{color:var(--ember); font-weight:900}
+.nav-links{margin-left:auto; display:flex; align-items:center; gap:24px}
+.nav-links a.anchor{font-family:'Spline Sans Mono',monospace; font-size:12px; letter-spacing:.04em; color:var(--bone-dim); transition:color .2s}
+.nav-links a.anchor:hover{color:var(--ember)}
+.btn{font-family:'Spline Sans Mono',monospace; font-size:12px; letter-spacing:.02em; padding:9px 15px; border:1px solid var(--line-hi); border-radius:2px; transition:all .2s; white-space:nowrap}
+.btn:hover{border-color:var(--ember); color:var(--ember)}
+.btn.solid{background:var(--ember); color:#1a0c04; border-color:var(--ember); font-weight:600}
+.btn.solid:hover{color:#1a0c04; box-shadow:4px 4px 0 rgba(255,90,44,.25)}
+@media(max-width:760px){.nav-links a.anchor{display:none}}
+
+header{padding:96px 0 60px; position:relative; overflow:hidden}
+.ghost{position:absolute; right:-3%; top:8%; font-family:'Fraunces',serif; font-weight:900; font-size:clamp(140px,34vw,420px); line-height:.8; color:transparent; -webkit-text-stroke:1px rgba(255,90,44,.10); pointer-events:none; z-index:0; user-select:none}
+.hero-top{font-family:'Spline Sans Mono',monospace; font-size:12px; letter-spacing:.22em; color:var(--bone-mute); text-transform:uppercase; display:flex; align-items:center; gap:14px; margin-bottom:30px}
+.hero-top::before{content:""; width:40px; height:1px; background:var(--ember)}
+h1{font-family:'Fraunces',serif; font-weight:600; font-size:clamp(54px,11vw,128px); line-height:.92; letter-spacing:-.025em; position:relative; z-index:1}
+h1 .amp{color:var(--ember); font-weight:900; font-style:italic}
+.role{font-family:'Spline Sans Mono',monospace; font-size:clamp(14px,2.2vw,17px); color:var(--bone); letter-spacing:.05em; margin:22px 0 26px; position:relative; z-index:1}
+.role b{color:var(--ember)}
+.lede{font-size:clamp(18px,2.4vw,22px); color:var(--bone-dim); max-width:600px; line-height:1.5; position:relative; z-index:1}
+.lede strong{color:var(--bone); font-weight:600}
+.hero-cta{display:flex; gap:12px; margin-top:36px; flex-wrap:wrap; position:relative; z-index:1}
+
+.strip{border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:34px 0; display:grid; grid-template-columns:160px 1fr; gap:30px}
+@media(max-width:680px){.strip{grid-template-columns:1fr; gap:18px}}
+.strip-label{font-family:'Spline Sans Mono',monospace; font-size:11px; color:var(--ember); letter-spacing:.16em; text-transform:uppercase; padding-top:4px}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{font-family:'Spline Sans Mono',monospace; font-size:12px; color:var(--bone-dim); background:var(--panel); border:1px solid var(--line); border-radius:2px; padding:7px 12px; transition:all .18s}
+.chip:hover{color:var(--ember); border-color:var(--ember-line); transform:translateY(-1px)}
+.certs{display:flex; flex-wrap:wrap; gap:9px; margin-top:14px}
+.cert{font-family:'Spline Sans Mono',monospace; font-size:11.5px; color:var(--bone); border:1px solid var(--line-hi); border-left:3px solid var(--ember); border-radius:2px; padding:8px 13px}
+.cert span{color:var(--bone-mute)}
+
+.band{padding:78px 0 10px}
+.band-head{display:flex; align-items:flex-end; gap:22px; margin-bottom:40px; border-bottom:2px solid var(--bone); padding-bottom:14px}
+.band-idx{font-family:'Fraunces',serif; font-style:italic; font-weight:900; font-size:clamp(40px,7vw,72px); line-height:.8; color:var(--ember)}
+.band-title{font-family:'Fraunces',serif; font-weight:600; font-size:clamp(24px,4vw,40px); letter-spacing:-.015em; line-height:1; margin-bottom:4px}
+.band-rule{flex:1}
+
+.card{border-top:1px solid var(--line); transition:background .25s}
+.card:first-of-type{border-top:none}
+.card.flagship{background:linear-gradient(100deg,var(--ember-soft),transparent 50%)}
+.card.flagship .card-head, .card.flagship .detail-pad{padding-left:30px}
+@media(max-width:760px){.card.flagship .card-head, .card.flagship .detail-pad{padding-left:16px}}
+.card-head{display:grid; grid-template-columns:220px 1fr 44px; gap:28px; padding:30px 0; cursor:pointer; align-items:start; position:relative}
+.card-head::before{content:""; position:absolute; left:-32px; top:0; bottom:0; width:3px; background:var(--ember); transform:scaleY(0); transform-origin:top; transition:transform .3s}
+.card:hover .card-head::before, .card.open .card-head::before{transform:scaleY(1)}
+@media(max-width:760px){
+  .card-head{grid-template-columns:1fr 40px; gap:8px 16px}
+  .rail{grid-column:1 / -1; margin-bottom:6px}
+  .card-head::before{left:-20px}
+}
+.rail{font-family:'Spline Sans Mono',monospace; font-size:11px; line-height:1.9; color:var(--bone-mute); letter-spacing:.03em; text-transform:uppercase}
+.rail .client{color:var(--ember); font-weight:600; display:block; margin-bottom:3px}
+.rail .org{display:block; color:var(--bone-dim)}
+.rail .tag{display:inline-block; margin-top:10px; border:1px solid var(--line-hi); border-radius:2px; padding:3px 8px; font-size:10px; letter-spacing:.08em; color:var(--bone)}
+.rail .tag.live{color:var(--ember); border-color:var(--ember-line)}
+.body-col{min-width:0}
+.card-title{font-family:'Fraunces',serif; font-weight:600; font-size:clamp(23px,3.2vw,33px); letter-spacing:-.015em; line-height:1.08; margin-bottom:13px; transition:color .2s}
+.card:hover .card-title{color:var(--ember)}
+.card-sum{color:var(--bone-dim); font-size:16px; max-width:680px}
+.metrics{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
+.metric{font-family:'Spline Sans Mono',monospace; font-size:11px; letter-spacing:.03em; color:var(--bone); border:1px solid var(--ember-line); background:var(--ember-soft); border-radius:2px; padding:5px 10px}
+.metric b{color:var(--ember); font-weight:600}
+.expand{width:44px; height:44px; border:1px solid var(--line-hi); border-radius:2px; display:grid; place-items:center; color:var(--bone-dim); transition:all .25s; justify-self:end}
+.expand svg{width:17px; height:17px; transition:transform .35s}
+.card.open .expand{background:var(--ember); border-color:var(--ember); color:#1a0c04}
+.card.open .expand svg{transform:rotate(135deg)}
+
+.detail{display:grid; grid-template-rows:0fr; transition:grid-template-rows .42s cubic-bezier(.4,0,.2,1)}
+.card.open .detail{grid-template-rows:1fr}
+.detail-inner{overflow:hidden}
+.detail-pad{padding:4px 0 38px; display:grid; grid-template-columns:220px 1fr; gap:28px}
+@media(max-width:760px){.detail-pad{grid-template-columns:1fr}}
+.detail-main{min-width:0; max-width:730px}
+.block{margin-bottom:24px}
+.block:last-child{margin-bottom:0}
+.block-lbl{font-family:'Spline Sans Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ember); margin-bottom:9px; display:flex; align-items:center; gap:10px}
+.block-lbl::after{content:""; flex:1; height:1px; background:var(--line)}
+.block p{color:var(--bone-dim); font-size:15.5px}
+.block ul{list-style:none; display:flex; flex-direction:column; gap:10px}
+.block li{color:var(--bone-dim); font-size:15.5px; padding-left:22px; position:relative}
+.block li::before{content:"—"; position:absolute; left:0; color:var(--ember)}
+.block li strong{color:var(--bone); font-weight:600}
+.stack-row{display:flex; flex-wrap:wrap; gap:7px}
+.stack-row .chip{font-size:11px; padding:5px 10px}
+
+.diagram{border:1px solid var(--line); border-radius:3px; background:var(--bg2); padding:28px 22px; margin-bottom:26px}
+.diag-cap{font-family:'Spline Sans Mono',monospace; font-size:10.5px; color:var(--bone-mute); letter-spacing:.16em; text-transform:uppercase; margin-bottom:22px; display:flex; align-items:center; gap:12px}
+.diag-cap::before{content:""; width:8px; height:8px; background:var(--ember); border-radius:50%}
+.flow{display:flex; align-items:stretch; justify-content:center; flex-wrap:wrap}
+.node{background:var(--panel); border:1px solid var(--line-hi); border-radius:3px; padding:13px 15px; min-width:120px; text-align:center; font-size:13px; color:var(--bone); display:flex; flex-direction:column; gap:3px; justify-content:center}
+.node small{font-family:'Spline Sans Mono',monospace; font-size:10px; color:var(--bone-mute)}
+.node.acc{border-color:var(--ember-line); background:linear-gradient(180deg,var(--ember-soft),var(--panel))}
+.arrow{display:flex; align-items:center; color:var(--ember); padding:0 8px; font-size:17px; font-family:'Spline Sans Mono',monospace}
+.split{display:flex; flex-direction:column; gap:10px; justify-content:center}
+.node.err{border-style:dashed; color:var(--bone-dim)}
+.diag-foot{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:20px; border-top:1px dashed var(--line); padding-top:18px}
+.diag-pill{font-family:'Spline Sans Mono',monospace; font-size:11px; color:var(--bone-dim); border:1px solid var(--line); border-radius:2px; padding:6px 11px}
+.diag-pill b{color:var(--ember); font-weight:600}
+@media(max-width:640px){.flow{flex-direction:column}.node{min-width:0}.arrow{transform:rotate(90deg); justify-content:center; padding:4px 0}.split{flex-direction:column}}
+
+footer{margin-top:96px; border-top:2px solid var(--bone); padding:64px 0 80px; position:relative; overflow:hidden}
+.foot-grid{display:flex; justify-content:space-between; gap:40px; flex-wrap:wrap; align-items:flex-end; position:relative; z-index:1}
+.foot-h{font-family:'Fraunces',serif; font-weight:600; font-size:clamp(40px,9vw,88px); letter-spacing:-.03em; line-height:.9; margin-bottom:14px}
+.foot-h .amp{color:var(--ember); font-style:italic; font-weight:900}
+.foot-sub{color:var(--bone-dim); font-size:16px; margin-bottom:26px}
+.foot-links{display:flex; gap:11px; flex-wrap:wrap}
+.foot-meta{font-family:'Spline Sans Mono',monospace; font-size:11.5px; color:var(--bone-mute); text-align:right; line-height:2; letter-spacing:.05em; text-transform:uppercase}
+.foot-meta .e{color:var(--ember)}
+@media(max-width:600px){.foot-meta{text-align:left}}
+
+.reveal{opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease}
+.reveal.in{opacity:1; transform:none}
+header .reveal{transition-delay:var(--d,0s)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-in">
+    <a href="#top" class="brand">Mohannad<b>.</b></a>
+    <div class="nav-links">
+      <a href="#government" class="anchor">government</a>
+      <a href="#enterprise" class="anchor">enterprise</a>
+      <a href="#contact" class="anchor">contact</a>
+      <a href="https://linkedin.com/in/mohannad-hyasat" target="_blank" rel="noopener" class="btn">LinkedIn</a>
+      <a href="Mohannad-Hyasat-CV.pdf" class="btn solid" download>CV ↓</a>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<header>
+  <div class="ghost">MH</div>
+  <div class="wrap">
+    <div class="hero-top reveal" style="--d:0s">Selected Work &nbsp;·&nbsp; Data Engineering &nbsp;·&nbsp; 2024-2026</div>
+    <h1 class="reveal" style="--d:.06s">Mohannad<br>Hyasat<span class="amp">.</span></h1>
+    <div class="role reveal" style="--d:.12s">Data Engineer &nbsp;<b>//</b>&nbsp; warehousing · ETL · BI</div>
+    <p class="lede reveal" style="--d:.18s">I build <strong>data warehouses, ETL pipelines, and the BI on top of them</strong>, across government and enterprise systems.</p>
+    <div class="hero-cta reveal" style="--d:.24s">
+      <a href="#government" class="btn solid">View the work</a>
+      <a href="mailto:Hyasat.mohannad@gmail.com" class="btn">Hyasat.mohannad@gmail.com</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="strip reveal">
+    <div class="strip-label">Core stack</div>
+    <div>
+      <div class="chips">
+        <span class="chip">SQL Server</span>
+        <span class="chip">Oracle</span>
+        <span class="chip">Oracle TimesTen</span>
+        <span class="chip">GoldenGate</span>
+        <span class="chip">SSIS</span>
+        <span class="chip">Alteryx</span>
+        <span class="chip">Power BI</span>
+        <span class="chip">T-SQL</span>
+        <span class="chip">PL/SQL</span>
+        <span class="chip">Python</span>
+        <span class="chip">Azure</span>
+      </div>
+      <div class="certs">
+        <span class="cert">Microsoft Certified: Azure Data Engineer Associate <span>/ 2024</span></span>
+        <span class="cert">Microsoft Certified: Power BI Data Analyst Associate <span>/ 2024</span></span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- BAND 1 -->
+<div class="wrap">
+  <section class="band" id="government">
+    <div class="band-head reveal">
+      <span class="band-idx">01</span>
+      <h2 class="band-title">Government Data Platforms</h2>
+      <span class="band-rule"></span>
+    </div>
+
+    <!-- NDW -->
+    <article class="card flagship reveal">
+      <div class="card-head" data-toggle>
+        <div class="rail">
+          <span class="client">MoDEE</span>
+          <span class="org">Ministry of Digital Economy &amp; Entrepreneurship</span>
+          <span class="tag">Flagship</span>
+        </div>
+        <div class="body-col">
+          <h3 class="card-title">National Data Warehouse</h3>
+          <p class="card-sum">A national-scale warehouse consolidating 30+ government entities into one platform, now the country's primary national data platform. I owned it end to end, and the core was delivered in about four months after an earlier two-year attempt had failed.</p>
+          <div class="metrics">
+            <span class="metric"><b>≈4 months</b> to core</span>
+            <span class="metric"><b>30+</b> entities</span>
+            <span class="metric">prior <b>2-year</b> attempt failed</span>
+          </div>
+        </div>
+        <div class="expand"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="detail"><div class="detail-inner"><div class="detail-pad">
+        <div class="spacer"></div>
+        <div class="detail-main">
+          <div class="diagram">
+            <div class="diag-cap">Ingestion architecture (abstracted)</div>
+            <div class="flow">
+              <div class="node">Source systems<small>Oracle / SQL Server<br>on-prem + cloud</small></div>
+              <div class="arrow">→</div>
+              <div class="node">Staging<small>full snapshot</small></div>
+              <div class="arrow">→</div>
+              <div class="node acc">Data quality<small>valid / invalid split</small></div>
+              <div class="arrow">→</div>
+              <div class="split">
+                <div class="node">Warehouse<small>clean, business-ready</small></div>
+                <div class="node err">Error store<small>invalid + reason</small></div>
+              </div>
+            </div>
+            <div class="diag-foot">
+              <span class="diag-pill"><b>CDC</b> primary key + row hash → insert / update / delete</span>
+              <span class="diag-pill"><b>Monitoring</b> job-level + per-table outcomes</span>
+            </div>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Context</div>
+            <p>A national platform pulling from 30+ government entities, each on its own operational system. Sources were a mix of Oracle and SQL Server, spread across on-prem sites and cloud. I owned the platform end to end.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Challenge</div>
+            <p>A prior two-year attempt had failed. Most sources had no dependable "last updated" timestamp to drive change detection, data quality varied a lot between entities, and the whole thing had to run daily, stay auditable, and let new entities be added without rebuilding the pipeline each time.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Approach</div>
+            <p>Since the source timestamps couldn't be trusted, I didn't lean on them. I drove change detection off a primary key plus a row hash, so inserts, updates, and deletes are caught by comparing hashes regardless of what a source does or doesn't report. I split the system into four separate databases so each concern stays isolated and traceable, and I built the loading as a reusable template, so adding a new entity is mostly configuration rather than a fresh custom build.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">What I built</div>
+            <ul>
+              <li><strong>Four-layer database architecture</strong> separating staging, the destination warehouse, rejected records, and monitoring.</li>
+              <li><strong>Hash-based change data capture</strong> (primary key plus a row hash) for reliable insert, update, and delete detection without source timestamps.</li>
+              <li><strong>A valid/invalid data quality split</strong> where failing rows aren't dropped silently. They're captured with an auto-generated, human-readable reason so they can be triaged and fixed.</li>
+              <li><strong>A reusable load-pattern and stored-procedure template</strong> so onboarding a new entity is a repeatable process.</li>
+              <li><strong>Two levels of monitoring and audit logging</strong>: job and package execution tracking, plus per-table outcomes (rows inserted, updated, deleted, durations, status).</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Stack</div>
+            <div class="stack-row"><span class="chip">SQL Server</span><span class="chip">SSIS</span><span class="chip">SQL Server Agent</span><span class="chip">T-SQL</span><span class="chip">Oracle sources</span><span class="chip">Exadata</span></div>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Outcome</div>
+            <p>Core platform live in about four months after the earlier two-year effort failed. Now the country's primary national data platform, in production with new sources onboarded on an ongoing basis. Clean, business-consumable data, full auditability, and a fast path to add new entities.</p>
+          </div>
+        </div>
+      </div></div></div>
+    </article>
+
+    <!-- Anti-corruption mart -->
+    <article class="card reveal">
+      <div class="card-head" data-toggle>
+        <div class="rail">
+          <span class="client">MoDEE</span>
+          <span class="org">Built on the national platform</span>
+        </div>
+        <div class="body-col">
+          <h3 class="card-title">Anti-corruption analytics data mart</h3>
+          <p class="card-sum">A denormalized, analysis-ready data mart built on top of the national warehouse for a national anti-corruption body that needed everything joined into wide tables, kept in sync across a hard server boundary.</p>
+          <div class="metrics">
+            <span class="metric">cross-server <b>incremental</b> loads</span>
+            <span class="metric"><b>watermark</b>-driven ETL</span>
+          </div>
+        </div>
+        <div class="expand"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="detail"><div class="detail-inner"><div class="detail-pad">
+        <div class="spacer"></div>
+        <div class="detail-main">
+          <div class="block">
+            <div class="block-lbl">Context</div>
+            <p>The national warehouse is normalized by design. This body needed the opposite for their analysis: every relevant table joined together into wide, denormalized tables they could query directly. The mart also lived on a separate server from the warehouse.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Challenge</div>
+            <p>Two hard parts. First, the two servers couldn't be linked directly for security reasons, so the truncate-and-reload pattern used on the warehouse wasn't possible here, and the data volume made full reloads impractical anyway. Second, the modeling: building wide tables meant joining across many source tables, which took real understanding of the business behind them, and some of those joins didn't produce a natural primary key.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Approach</div>
+            <p>Since I couldn't link the servers, I moved data with ETL instead. To avoid reloading everything on every run, I added watermarks on the warehouse side (insert date, update date, business key) so the mart pulls incrementally and only takes what actually changed. On the modeling side, where a clean key didn't fall out of a join, I built logic in CTEs and derived computed columns to construct one and to keep complex relationships resolving correctly rather than collapsing when joined.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">What I built</div>
+            <ul>
+              <li><strong>Incremental ETL pipelines</strong> that move data across the server boundary without a direct link.</li>
+              <li><strong>A watermark scheme</strong> on the source side driving the incremental loads.</li>
+              <li><strong>Denormalized wide tables</strong> with engineered composite keys and the join logic to populate them correctly.</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Stack</div>
+            <div class="stack-row"><span class="chip">SQL Server</span><span class="chip">SSIS</span><span class="chip">T-SQL</span><span class="chip">Incremental ETL</span></div>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Outcome</div>
+            <p>The mart stays in sync with the warehouse through incremental loads instead of full reloads, and analysts get correct, queryable wide tables even across complex relationships that would otherwise break on a naive join.</p>
+          </div>
+        </div>
+      </div></div></div>
+    </article>
+
+    <!-- Sanad -->
+    <article class="card reveal">
+      <div class="card-head" data-toggle>
+        <div class="rail">
+          <span class="client">MoDEE</span>
+          <span class="org">Sanad national e-government app</span>
+        </div>
+        <div class="body-col">
+          <h3 class="card-title">Citizen-facing data layer optimization</h3>
+          <p class="card-sum">Built and tuned the data layer behind Jordan's national e-government app on Oracle TimesTen in-memory, so the APIs citizens hit return inside a sub-50ms target.</p>
+          <div class="metrics">
+            <span class="metric"><b>&lt;50ms</b> API target</span>
+            <span class="metric"><b>in-memory</b> (TimesTen)</span>
+          </div>
+        </div>
+        <div class="expand"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="detail"><div class="detail-inner"><div class="detail-pad">
+        <div class="spacer"></div>
+        <div class="detail-main">
+          <div class="block">
+            <div class="block-lbl">Context</div>
+            <p>Sanad is the national app citizens use to reach government services. Its APIs needed sub-second responses, with a real bar under 50 milliseconds, so the data layer behind them had to be heavily optimized. TimesTen was chosen because it's in-memory, which is what makes that latency realistic. I worked on this alongside another company.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Challenge</div>
+            <p>Hitting a sub-50ms bar meant everything in the query path had to be tight. On top of the raw optimization, there was a domain gap: knowing which entities' data was involved and what it actually meant, not just how to make a query fast.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Approach</div>
+            <p>I owned the parts where I had the most impact end to end: getting the relevant entity's data into TimesTen and writing the API queries that read from it, then tuning them down to the latency target. Teams came to me specifically because I understood the business behind certain entities, so the work combined performance engineering with the domain knowledge to model the right data the right way.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">What I built</div>
+            <ul>
+              <li>Loaded the relevant entities' tables into <strong>Oracle TimesTen in-memory</strong>.</li>
+              <li>Wrote and <strong>optimized the queries the APIs call</strong>, tuned to hit the sub-50ms target.</li>
+              <li>Applied domain knowledge of specific entities to model the right data for each query.</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Stack</div>
+            <div class="stack-row"><span class="chip">Oracle TimesTen</span><span class="chip">PL/SQL</span><span class="chip">Oracle</span><span class="chip">Query tuning</span></div>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Outcome</div>
+            <p>The APIs I worked on return inside the sub-50ms target, keeping citizen-facing services fast under national-scale traffic.</p>
+          </div>
+        </div>
+      </div></div></div>
+    </article>
+
+    <!-- KPI warehouse -->
+    <article class="card reveal">
+      <div class="card-head" data-toggle>
+        <div class="rail">
+          <span class="client">MoDEE</span>
+          <span class="org">Internal</span>
+        </div>
+        <div class="body-col">
+          <h3 class="card-title">Single source of truth KPI warehouse</h3>
+          <p class="card-sum">A purpose-built KPI mart where each metric is reconciled from several entities and put through layers of business rules, so the ministry has one trusted, traceable place for its KPIs instead of scattered reporting.</p>
+          <div class="metrics">
+            <span class="metric"><b>multi-entity</b> reconciliation</span>
+            <span class="metric">owned <b>end to end</b> (ex. dashboards)</span>
+          </div>
+        </div>
+        <div class="expand"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="detail"><div class="detail-inner"><div class="detail-pad">
+        <div class="spacer"></div>
+        <div class="detail-main">
+          <div class="block">
+            <div class="block-lbl">Context</div>
+            <p>Unlike the national warehouse, this wasn't a broad consolidation. It's targeted: the ministry tracks specific KPIs, so this is a purpose-built mart feeding reporting, shaped around the exact metrics they need.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Challenge</div>
+            <p>The hard part was business complexity, not volume. A single KPI often isn't sourced from one place. The same subject had to be pulled from multiple entities and reconciled into one view, then put through layer after layer of rules (classification, thresholds, qualification criteria, and more). All of that chained logic could produce just one table, for one page, of one dashboard, with many more behind it.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Approach</div>
+            <p>A two-stage pattern. Multiple starter queries pull just the slice each KPI needs from each entity and land it in a staging database. Then one larger query joins across those staged tables and applies the business rules to produce the final table for that KPI in the mart. Staging isolates and simplifies each source; the final query handles the reconciliation and logic in one place. Repeat per KPI.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">What I built</div>
+            <ul>
+              <li>The <strong>KPI mart and all the ETL behind it</strong>: the starter queries, the staging layer, and the consolidating queries.</li>
+              <li><strong>Multi-entity reconciliation</strong> per subject, with the business rules encoded as the transformation layer.</li>
+              <li>Owned everything end to end except the dashboards, which read from finished, ready tables.</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Stack</div>
+            <div class="stack-row"><span class="chip">SQL Server</span><span class="chip">T-SQL</span><span class="chip">ETL</span><span class="chip">Power BI</span></div>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Outcome</div>
+            <p>Trustworthy, consistent KPI definitions in one place, each traceable back through its sources and rules, replacing scattered and inconsistent reporting.</p>
+          </div>
+        </div>
+      </div></div></div>
+    </article>
+
+  </section>
+</div>
+
+<!-- BAND 2 -->
+<div class="wrap">
+  <section class="band" id="enterprise">
+    <div class="band-head reveal">
+      <span class="band-idx">02</span>
+      <h2 class="band-title">Enterprise BI &amp; Integration</h2>
+      <span class="band-rule"></span>
+    </div>
+
+    <!-- AIG scorecard -->
+    <article class="card reveal">
+      <div class="card-head" data-toggle>
+        <div class="rail">
+          <span class="client">Pure Analytica</span>
+          <span class="org">Airport International Group</span>
+          <span class="tag">Data engineering</span>
+        </div>
+        <div class="body-col">
+          <h3 class="card-title">360 balanced scorecard data mart</h3>
+          <p class="card-sum">Pulled a company's KPIs out of scattered manual Excel files into one consolidated balanced scorecard, driven by a config table so KPIs can change without reworking the pipeline.</p>
+          <div class="metrics">
+            <span class="metric">manual Excel → <b>one</b> scorecard</span>
+            <span class="metric"><b>config-driven</b> ETL</span>
+          </div>
+        </div>
+        <div class="expand"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="detail"><div class="detail-inner"><div class="detail-pad">
+        <div class="spacer"></div>
+        <div class="detail-main">
+          <div class="block">
+            <div class="block-lbl">Context</div>
+            <p>Airport International Group had no real way to get one overall read on enterprise performance. The KPIs existed, but they were tracked manually across scattered Excel files, with different teams each reporting their own piece. They needed one consolidated balanced scorecard.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Challenge</div>
+            <p>Beyond consolidating a mess of manual sources, the system had to stay maintainable. A scorecard's KPIs change, and you don't want a design where every change means reworking the ETL.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Approach</div>
+            <p>A config-driven design. A central config table holds each KPI as a row: its ID, its name, the function it targets, and the calculation query itself stored in the table. The SSIS ETL then runs a dynamic query that reads each KPI's stored query, executes it, and writes the result into its destination table. So adding or changing a KPI becomes a config change, not an ETL change.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">What I built</div>
+            <ul>
+              <li>Implemented the <strong>KPI queries</strong> and mainly built the <strong>dynamic SSIS ETL</strong> that reads and runs them from config.</li>
+              <li>Worked with the team on the <strong>config table</strong> holding the KPI calculations.</li>
+              <li>The consolidated <strong>scorecard data mart</strong> the reporting sits on.</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Stack</div>
+            <div class="stack-row"><span class="chip">SQL Server</span><span class="chip">SSIS</span><span class="chip">T-SQL</span><span class="chip">Dynamic ETL</span></div>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Outcome</div>
+            <p>Every manually tracked KPI pulled into one consolidated scorecard instead of scattered Excel files and team-by-team reporting, with a design where KPIs are added or changed through config rather than a pipeline rebuild.</p>
+          </div>
+        </div>
+      </div></div></div>
+    </article>
+
+    <!-- AIG diagnostic -->
+    <article class="card reveal">
+      <div class="card-head" data-toggle>
+        <div class="rail">
+          <span class="client">Pure Analytica</span>
+          <span class="org">Airport International Group</span>
+          <span class="tag">End to end</span>
+        </div>
+        <div class="body-col">
+          <h3 class="card-title">Diagnostic sales analytics suite</h3>
+          <p class="card-sum">Diagnostic analytics on what drives sales, organic versus inorganic growth and how they compare, delivered as 13 dashboards in one report off a clean mart I built from scattered source data, solo.</p>
+          <div class="metrics">
+            <span class="metric"><b>13</b> dashboards</span>
+            <span class="metric"><b>solo</b> build</span>
+            <span class="metric">data → model → BI</span>
+          </div>
+        </div>
+        <div class="expand"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="detail"><div class="detail-inner"><div class="detail-pad">
+        <div class="spacer"></div>
+        <div class="detail-main">
+          <div class="block">
+            <div class="block-lbl">Context</div>
+            <p>Diagnostic analytics on what was driving sales for Airport International Group, including organic versus inorganic growth and a comparison of the two, delivered as 13 dashboards in a single report.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Challenge</div>
+            <p>Their data warehouse held what I needed, but it was scattered. The hard part was finding the right data, understanding what it meant, and shaping a clean mart that the report could stand on.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Approach</div>
+            <p>I ran working sessions with their technical team to understand the tables, where the data actually lived, and how it fit together. From that I designed one clear data mart holding exactly what the 13 dashboards needed, then built the model and reporting on top of it.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">What I built</div>
+            <ul>
+              <li>The <strong>data mart</strong>, plus the <strong>ETL and data model</strong> underneath it.</li>
+              <li><strong>All 13 dashboards, built single-handed</strong>, from raw data through to delivered reporting.</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Stack</div>
+            <div class="stack-row"><span class="chip">Power BI</span><span class="chip">SQL Server</span><span class="chip">T-SQL</span><span class="chip">ETL</span></div>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Outcome</div>
+            <p>One coherent diagnostic report answering how sales were really growing, off a clean purpose-built mart instead of scattered source tables.</p>
+          </div>
+        </div>
+      </div></div></div>
+    </article>
+
+    <!-- SAP / Leaders -->
+    <article class="card reveal">
+      <div class="card-head" data-toggle>
+        <div class="rail">
+          <span class="client">Leaders</span>
+          <span class="org">SAP Solutions &amp; Integration Specialist</span>
+        </div>
+        <div class="body-col">
+          <h3 class="card-title">SAP integrations &amp; supplier self-service portal</h3>
+          <p class="card-sum">Ran and extended the SAP system: a supplier self-service portal that moved purchase-order creation onto suppliers, made dynamic so it keeps up with system changes on its own, plus external integrations and the reporting layer.</p>
+          <div class="metrics">
+            <span class="metric">PO creation → <b>suppliers</b></span>
+            <span class="metric"><b>static → dynamic</b> queries</span>
+          </div>
+        </div>
+        <div class="expand"><svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      </div>
+      <div class="detail"><div class="detail-inner"><div class="detail-pad">
+        <div class="spacer"></div>
+        <div class="detail-main">
+          <div class="block">
+            <div class="block-lbl">Context</div>
+            <p>As SAP Solutions &amp; Integration Specialist I ran the SAP system and built the integrations and reporting around it. The supplier portal was the centerpiece: a place for suppliers to raise their own purchase orders as drafts, leaving the internal team to review and approve rather than create every order by hand.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Challenge</div>
+            <p>The existing portal implementation had real problems. The queries behind it were static, so anything new added to the system, a new warehouse or a new item, simply didn't show up. Some queries were slow. And there were structural issues from parts having been built the wrong way.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Approach</div>
+            <p>I reworked the static queries to be dynamic, so the portal reflects new things automatically instead of needing a manual edit every time the system changes. I optimized the slow ones, and on the broader structural issues I consulted on the fix and implemented part of it. Alongside the portal, I integrated external systems into SAP and built the reporting layer.</p>
+          </div>
+          <div class="block">
+            <div class="block-lbl">What I built</div>
+            <ul>
+              <li>The <strong>supplier self-service flow</strong>: suppliers create their own draft purchase orders, the team only approves.</li>
+              <li><strong>Dynamic, self-updating queries</strong> behind the portal that pick up new system items automatically.</li>
+              <li><strong>Performance fixes</strong> on the slow queries, and part of the fix for the structural issues.</li>
+              <li><strong>External system integrations</strong> into SAP, including an online store, plus the <strong>reporting layer</strong> and its queries.</li>
+            </ul>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Stack</div>
+            <div class="stack-row"><span class="chip">SAP</span><span class="chip">System integration</span><span class="chip">SQL</span><span class="chip">Reporting</span></div>
+          </div>
+          <div class="block">
+            <div class="block-lbl">Outcome</div>
+            <p>Purchase-order creation shifted off the internal team and onto suppliers, with the team only approving. The portal now keeps up with system changes on its own, runs faster, and carries fewer of the old issues.</p>
+          </div>
+        </div>
+      </div></div></div>
+    </article>
+
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid reveal">
+      <div>
+        <div class="foot-h">Let's talk<span class="amp">.</span></div>
+        <p class="foot-sub">Always up for a hard data problem.</p>
+        <div class="foot-links">
+          <a href="mailto:Hyasat.mohannad@gmail.com" class="btn solid">Hyasat.mohannad@gmail.com</a>
+          <a href="https://linkedin.com/in/mohannad-hyasat" target="_blank" rel="noopener" class="btn">LinkedIn</a>
+          <a href="Mohannad-Hyasat-CV.pdf" class="btn" download>CV ↓</a>
+        </div>
+      </div>
+      <div class="foot-meta">
+        Mohannad Hyasat<br>
+        Data Engineer<br>
+        Amman, Jordan<br>
+        <span class="e">// 2026</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('[data-toggle]').forEach(function(head){
+  head.addEventListener('click', function(){ head.closest('.card').classList.toggle('open'); });
+});
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); } });
+}, {threshold:.1, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
+window.addEventListener('load', function(){
+  document.querySelectorAll('header .reveal').forEach(function(el){ el.classList.add('in'); });
+});
+</script>
+</body>
+</html>
